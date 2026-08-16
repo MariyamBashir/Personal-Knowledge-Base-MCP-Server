@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "personal-knowledge": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["-m", "app.mcp_server"],
+      "cwd": "C:\\Users\\USER\\OneDrive\\Desktop\\personal-knowledge-mcp\\backend",
+      "requestTimeout": 180000,
+      "connectionTimeout": 30000
+    }
+  }
+}
