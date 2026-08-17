@@ -46,3 +46,104 @@ def search_documents(
         )
 
     return matches
+
+
+def get_document(doc_id: str) -> dict | None:
+    """
+    Retrieve all chunks belonging to a document
+    and reconstruct its content.
+    """
+
+    client = get_client()
+
+    results, _ = client.scroll(
+        collection_name=COLLECTION_NAME,
+        scroll_filter={
+            "must": [
+                {
+                    "key": "doc_id",
+                    "match": {
+                        "value": doc_id,
+                    },
+                }
+            ]
+        },
+        limit=1000,
+        with_payload=True,
+        with_vectors=False,
+    )
+
+    if not results:
+        return None
+
+    chunks = []
+
+    for result in results:
+        payload = result.payload
+
+        chunks.append(
+            {
+                "filename": payload.get("filename"),
+                "subject": payload.get("subject"),
+                "page_number": payload.get("page_number"),
+                "chunk_index": payload.get("chunk_index"),
+                "text": payload.get("text"),
+            }
+        )
+
+    chunks.sort(
+        key=lambda chunk: (
+            chunk["page_number"] or 0,
+            chunk["chunk_index"] or 0,
+        )
+    )
+
+    document_text = "\n\n".join(
+        chunk["text"]
+        for chunk in chunks
+        if chunk["text"]
+    )
+
+    return {
+        "doc_id": doc_id,
+        "filename": chunks[0]["filename"],
+        "subject": chunks[0]["subject"],
+        "total_chunks": len(chunks),
+        "content": document_text,
+        "chunks": chunks,
+    }
+
+
+def list_sources() -> list[dict]:
+    """
+    List all unique documents available
+    in the personal knowledge base.
+    """
+
+    client = get_client()
+
+    results, _ = client.scroll(
+        collection_name=COLLECTION_NAME,
+        limit=1000,
+        with_payload=True,
+        with_vectors=False,
+    )
+
+    sources = {}
+
+    for result in results:
+        payload = result.payload
+
+        doc_id = payload.get("doc_id")
+
+        if not doc_id:
+            continue
+
+        if doc_id not in sources:
+            sources[doc_id] = {
+                "doc_id": doc_id,
+                "filename": payload.get("filename"),
+                "subject": payload.get("subject"),
+            }
+
+    return list(sources.values())

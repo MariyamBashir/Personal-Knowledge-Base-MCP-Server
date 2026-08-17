@@ -1,4 +1,5 @@
 import os
+import sys
 
 # Silence Hugging Face / Transformers messages
 os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] = "1"
@@ -21,11 +22,19 @@ def get_model() -> SentenceTransformer:
     global model
 
     if model is None:
-        print("Loading embedding model...", flush=True)
+        print(
+            "Loading embedding model...",
+            file=sys.stderr,
+            flush=True,
+        )
 
         model = SentenceTransformer(MODEL_NAME)
 
-        print("Embedding model loaded!", flush=True)
+        print(
+            "Embedding model loaded!",
+            file=sys.stderr,
+            flush=True,
+        )
 
     return model
 

@@ -3,7 +3,11 @@ import time
 
 from fastmcp import FastMCP
 
-from app.services.retrieval import search_documents
+from app.services.retrieval import (
+    search_documents,
+    get_document as retrieve_document,
+    list_sources as retrieve_sources,
+)
 
 
 mcp = FastMCP("Personal Knowledge Base")
@@ -80,6 +84,79 @@ def search_notes(
         "results": formatted_results,
     }
 
+@mcp.tool()
+def get_document(doc_id: str) -> dict:
+    """
+    Retrieve the complete content of a document from the knowledge base.
+
+    Args:
+        doc_id: Unique identifier of the document.
+
+    Returns:
+        Document metadata and reconstructed content.
+    """
+
+    print(
+        f"MCP: get_document called with doc_id: {doc_id}",
+        file=sys.stderr,
+        flush=True,
+    )
+
+    start = time.time()
+
+    document = retrieve_document(doc_id)
+
+    elapsed = time.time() - start
+
+    print(
+        f"MCP: document retrieval completed in {elapsed:.2f}s",
+        file=sys.stderr,
+        flush=True,
+    )
+
+    if document is None:
+        return {
+            "doc_id": doc_id,
+            "found": False,
+            "message": "Document not found.",
+        }
+
+    return {
+        "found": True,
+        **document,
+    }
+
+@mcp.tool()
+def list_sources() -> dict:
+    """
+    List all documents available in the personal knowledge base.
+
+    Returns:
+        A list of unique documents with their IDs, filenames, and subjects.
+    """
+
+    print(
+        "MCP: list_sources called",
+        file=sys.stderr,
+        flush=True,
+    )
+
+    start = time.time()
+
+    sources = retrieve_sources()
+
+    elapsed = time.time() - start
+
+    print(
+        f"MCP: source listing completed in {elapsed:.2f}s",
+        file=sys.stderr,
+        flush=True,
+    )
+
+    return {
+        "total_sources": len(sources),
+        "sources": sources,
+    }
 
 if __name__ == "__main__":
     mcp.run()
