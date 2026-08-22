@@ -1,5 +1,6 @@
 from app.services.embeddings import generate_embedding
 from app.services.qdrant_service import COLLECTION_NAME, get_client
+from qdrant_client.models import Filter, FieldCondition, MatchValue
 
 
 SIMILARITY_THRESHOLD = 0.45
@@ -7,10 +8,12 @@ SIMILARITY_THRESHOLD = 0.45
 
 def search_documents(
     query: str,
+    user_id: str,
     top_k: int = 5,
 ) -> list[dict]:
     """
-    Perform semantic search over the personal knowledge base.
+    Perform semantic search over the personal knowledge base
+    for a specific user.
 
     Results below the similarity threshold are discarded.
     """
@@ -24,6 +27,14 @@ def search_documents(
         query=query_vector,
         limit=top_k,
         with_payload=True,
+        query_filter=Filter(
+            must=[
+                FieldCondition(
+                    key="user_id",
+                    match=MatchValue(value=user_id),
+                )
+            ]
+        ),
     )
 
     matches = []
@@ -48,10 +59,13 @@ def search_documents(
     return matches
 
 
-def get_document(doc_id: str) -> dict | None:
+def get_document(
+    doc_id: str,
+    user_id: str,
+) -> dict | None:
     """
     Retrieve all chunks belonging to a document
-    and reconstruct its content.
+    for a specific user and reconstruct its content.
     """
 
     client = get_client()
@@ -65,7 +79,13 @@ def get_document(doc_id: str) -> dict | None:
                     "match": {
                         "value": doc_id,
                     },
-                }
+                },
+                {
+                    "key": "user_id",
+                    "match": {
+                        "value": user_id,
+                    },
+                },
             ]
         },
         limit=1000,
@@ -114,16 +134,26 @@ def get_document(doc_id: str) -> dict | None:
     }
 
 
-def list_sources() -> list[dict]:
+def list_sources(user_id: str) -> list[dict]:
     """
     List all unique documents available
-    in the personal knowledge base.
+    for a specific user.
     """
 
     client = get_client()
 
     results, _ = client.scroll(
         collection_name=COLLECTION_NAME,
+        scroll_filter={
+            "must": [
+                {
+                    "key": "user_id",
+                    "match": {
+                        "value": user_id,
+                    },
+                }
+            ]
+        },
         limit=1000,
         with_payload=True,
         with_vectors=False,

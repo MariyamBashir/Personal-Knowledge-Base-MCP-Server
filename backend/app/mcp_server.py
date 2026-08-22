@@ -22,6 +22,7 @@ def ping() -> str:
 @mcp.tool()
 def search_notes(
     query: str,
+    user_id: str,
     top_k: int = 5,
 ) -> dict:
     """
@@ -29,6 +30,7 @@ def search_notes(
 
     Args:
         query: Natural-language question or search query.
+        user_id: Unique identifier of the user.
         top_k: Maximum number of results to return.
 
     Returns:
@@ -36,7 +38,8 @@ def search_notes(
     """
 
     print(
-        f"MCP: search_notes called with query: {query}",
+        f"MCP: search_notes called by user {user_id} "
+        f"with query: {query}",
         file=sys.stderr,
         flush=True,
     )
@@ -46,6 +49,7 @@ def search_notes(
     results = search_documents(
         query=query,
         top_k=top_k,
+        user_id=user_id,
     )
 
     elapsed = time.time() - start
@@ -59,6 +63,7 @@ def search_notes(
     if not results:
         return {
             "query": query,
+            "user_id": user_id,
             "results": [],
             "message": "No confident match found.",
         }
@@ -81,30 +86,40 @@ def search_notes(
 
     return {
         "query": query,
+        "user_id": user_id,
         "results": formatted_results,
     }
 
+
 @mcp.tool()
-def get_document(doc_id: str) -> dict:
+def get_document(
+    doc_id: str,
+    user_id: str,
+) -> dict:
     """
     Retrieve the complete content of a document from the knowledge base.
 
     Args:
         doc_id: Unique identifier of the document.
+        user_id: Unique identifier of the user.
 
     Returns:
         Document metadata and reconstructed content.
     """
 
     print(
-        f"MCP: get_document called with doc_id: {doc_id}",
+        f"MCP: get_document called by user {user_id} "
+        f"with doc_id: {doc_id}",
         file=sys.stderr,
         flush=True,
     )
 
     start = time.time()
 
-    document = retrieve_document(doc_id)
+    document = retrieve_document(
+        doc_id=doc_id,
+        user_id=user_id,
+    )
 
     elapsed = time.time() - start
 
@@ -117,33 +132,39 @@ def get_document(doc_id: str) -> dict:
     if document is None:
         return {
             "doc_id": doc_id,
+            "user_id": user_id,
             "found": False,
             "message": "Document not found.",
         }
 
     return {
         "found": True,
+        "user_id": user_id,
         **document,
     }
 
+
 @mcp.tool()
-def list_sources() -> dict:
+def list_sources(user_id: str) -> dict:
     """
-    List all documents available in the personal knowledge base.
+    List all documents available to a specific user.
+
+    Args:
+        user_id: Unique identifier of the user.
 
     Returns:
         A list of unique documents with their IDs, filenames, and subjects.
     """
 
     print(
-        "MCP: list_sources called",
+        f"MCP: list_sources called by user {user_id}",
         file=sys.stderr,
         flush=True,
     )
 
     start = time.time()
 
-    sources = retrieve_sources()
+    sources = retrieve_sources(user_id=user_id)
 
     elapsed = time.time() - start
 
@@ -154,9 +175,11 @@ def list_sources() -> dict:
     )
 
     return {
+        "user_id": user_id,
         "total_sources": len(sources),
         "sources": sources,
     }
+
 
 if __name__ == "__main__":
     mcp.run()

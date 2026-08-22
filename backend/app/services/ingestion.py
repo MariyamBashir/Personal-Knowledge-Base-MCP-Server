@@ -12,10 +12,10 @@ from app.utils.document_reader import read_pdf_pages
 UPLOADS_DIR = Path("uploads")
 
 
-def ingest_pdf(file_path: Path) -> int:
+def ingest_pdf(file_path: Path, user_id: str) -> int:
     """
     Read a PDF, create chunks, generate embeddings,
-    and store the chunks in Qdrant.
+    and store the chunks in Qdrant for a specific user.
 
     Returns:
         Number of chunks stored.
@@ -37,6 +37,7 @@ def ingest_pdf(file_path: Path) -> int:
 
             all_chunks.append(
                 {
+                    "user_id": user_id,
                     "doc_id": file_path.stem,
                     "filename": file_path.name,
                     "subject": file_path.parent.name,
@@ -79,8 +80,8 @@ def ingest_pdf(file_path: Path) -> int:
     return len(points)
 
 
-def ingest_all_documents() -> int:
-    """Ingest every PDF inside the uploads directory."""
+def ingest_all_documents(user_id: str) -> int:
+    """Ingest every PDF inside the uploads directory for a user."""
 
     pdf_files = sorted(UPLOADS_DIR.rglob("*.pdf"))
 
@@ -90,7 +91,7 @@ def ingest_all_documents() -> int:
     print()
 
     for file_path in pdf_files:
-        total_chunks += ingest_pdf(file_path)
+        total_chunks += ingest_pdf(file_path, user_id)
 
     print()
     print(f"Total chunks stored: {total_chunks}")

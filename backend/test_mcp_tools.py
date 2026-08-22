@@ -40,6 +40,7 @@ async def main():
             "search_notes",
             {
                 "query": "What manages computer hardware and system resources?",
+                "user_id": "user_1",
                 "top_k": 3,
             },
         )
@@ -52,7 +53,9 @@ async def main():
 
         sources_result = await client.call_tool(
             "list_sources",
-            {},
+            {
+                "user_id": "user_1",
+            },
         )
 
         print(sources_result)
@@ -65,10 +68,69 @@ async def main():
             "get_document",
             {
                 "doc_id": "OS-1",
+                "user_id": "user_1",
             },
         )
 
         print(document_result)
+
+        print()
+
+        print("=== MULTI-USER ISOLATION ===")
+
+        print("--- USER 1 SOURCES ---")
+
+        user1_sources = await client.call_tool(
+            "list_sources",
+            {
+                "user_id": "user_1",
+            },
+        )
+
+        print(user1_sources)
+
+        print()
+
+        print("--- USER 2 SOURCES ---")
+
+        user2_sources = await client.call_tool(
+        "list_sources",
+            {
+                "user_id": "user_2",
+            },
+        )
+
+        print(user2_sources)
+
+        print()
+
+        print("--- USER 1 SEARCHING FOR USER 2 CONTENT ---")
+
+        user1_search = await client.call_tool(
+        "search_notes",
+            {   
+                "query": "database indexing B-tree",
+                "user_id": "user_1",
+                "top_k": 5,
+            },
+        )
+
+        print(user1_search)
+
+        print()
+
+        print("--- USER 2 SEARCHING FOR OWN CONTENT ---")
+
+        user2_search = await client.call_tool(
+        "search_notes",
+            {
+                "query": "database indexing B-tree",
+                "user_id": "user_2",
+                "top_k": 5,
+            },
+        )
+
+        print(user2_search)
 
 
 if __name__ == "__main__":
