@@ -14,12 +14,14 @@ import { useEffect, useState } from "react";
 import "./App.css";
 
 const API_BASE_URL = "http://127.0.0.1:8000";
+const USER_ID = "user_1";
 
 function App() {
   const [sources, setSources] = useState([]);
   const [loading, setLoading] = useState(true);
   const [apiOnline, setApiOnline] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("dashboard");
 
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
@@ -32,13 +34,36 @@ function App() {
   const [documentLoading, setDocumentLoading] = useState(false);
   const [documentError, setDocumentError] = useState("");
 
+  // Upload state
+  const [uploadFile, setUploadFile] = useState(null);
+  const [uploadSubject, setUploadSubject] = useState("");
+  const [uploadLoading, setUploadLoading] = useState(false);
+  const [uploadMessage, setUploadMessage] = useState("");
+  const [uploadError, setUploadError] = useState("");
+
+  function navigateToSection(section) {
+    setActiveSection(section);
+    setSidebarOpen(false);
+
+    const element = document.getElementById(section);
+
+    if (element) {
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }
+
   useEffect(() => {
     fetchSources();
   }, []);
 
   async function fetchSources() {
     try {
-      const response = await fetch(`${API_BASE_URL}/sources`);
+      const response = await fetch(
+        `${API_BASE_URL}/sources?user_id=${encodeURIComponent(USER_ID)}`
+      );
 
       if (!response.ok) {
         throw new Error("Failed to fetch sources");
@@ -69,7 +94,8 @@ function App() {
 
     try {
       const response = await fetch(
-        `${API_BASE_URL}/search?query=${encodeURIComponent(query)}&top_k=5`
+        `${API_BASE_URL}/search?query=${encodeURIComponent(query
+          )}&top_k=5&user_id=${encodeURIComponent(USER_ID)}`
       );
 
       if (!response.ok) {
@@ -105,7 +131,8 @@ function App() {
 
   try {
     const response = await fetch(
-      `${API_BASE_URL}/documents/${encodeURIComponent(docId)}`
+      `${API_BASE_URL}/documents/${encodeURIComponent(docId
+      )}?user_id=${encodeURIComponent(USER_ID)}`
     );
 
     if (!response.ok) {
@@ -127,6 +154,64 @@ function App() {
     );
   } finally {
     setDocumentLoading(false);
+  }
+}
+
+async function handleUpload() {
+  if (!uploadFile) {
+    setUploadError("Please select a PDF file.");
+    return;
+  }
+
+  if (!uploadSubject.trim()) {
+    setUploadError("Please enter a subject.");
+    return;
+  }
+
+  setUploadLoading(true);
+  setUploadMessage("");
+  setUploadError("");
+
+  try {
+    const formData = new FormData();
+    formData.append("file", uploadFile);
+
+    const response = await fetch(
+      `${API_BASE_URL}/upload?user_id=user_1&subject=${encodeURIComponent(
+        uploadSubject.trim()
+      )}`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.detail || "Upload failed");
+    }
+
+    if (!data.success) {
+      throw new Error(data.message || "Document could not be uploaded.");
+    }
+
+    setUploadMessage(
+      `${data.filename} uploaded successfully. ${data.chunks_stored} chunks stored.`
+    );
+
+    setUploadFile(null);
+    setUploadSubject("");
+
+    // Refresh sources and dashboard statistics
+    await fetchSources();
+  } catch (error) {
+    console.error("Upload error:", error);
+    setUploadError(
+      error.message || "Unable to upload the document. Please try again."
+    );
+  } finally {
+    setUploadLoading(false);
   }
 }
 
@@ -170,18 +255,33 @@ function App() {
             WORKSPACE
           </div>
 
-          <button className="nav-item active">
-            <BookOpen size={19} />
+          <button
+            className={`nav-item ${
+              activeSection === "dashboard" ? "active" : ""
+            }`}
+            onClick={() => navigateToSection("dashboard")}
+          >
+          <BookOpen size={19} />
             <span>Dashboard</span>
           </button>
 
-          <button className="nav-item">
-            <Search size={19} />
+          <button
+            className={`nav-item ${
+              activeSection === "search" ? "active" : ""
+            }`}
+            onClick={() => navigateToSection("search")}
+          >
+          <Search size={19} />
             <span>Search</span>
           </button>
 
-          <button className="nav-item">
-            <Database size={19} />
+          <button
+          className={`nav-item ${
+            activeSection === "sources" ? "active" : ""
+          }`}
+            onClick={() => navigateToSection("sources")}
+          >
+          <Database size={19} />
             <span>Sources</span>
           </button>
 
@@ -244,7 +344,7 @@ function App() {
         <div className="content">
 
           {/* Hero */}
-          <section className="hero">
+          <section className="hero" id="dashboard">
 
             <div>
               <div className="eyebrow">
@@ -331,8 +431,82 @@ function App() {
 
           </section>
 
-          {/* Search */}
+                    {/* Upload */}
           <section className="search-section">
+
+            <div className="section-heading">
+              <div>
+                <h2>Add to your knowledge</h2>
+
+                <p>
+                  Upload a PDF document to add it to your personal
+                  knowledge base.
+                </p>
+              </div>
+            </div>
+
+            <div className="search-box">
+
+              <FileText size={21} />
+
+              <input
+                type="file"
+                accept=".pdf,application/pdf"
+                onChange={(event) => {
+                  setUploadFile(event.target.files?.[0] || null);
+                  setUploadMessage("");
+                  setUploadError("");
+                }}
+              />
+
+              <input
+                type="text"
+                value={uploadSubject}
+                onChange={(event) => setUploadSubject(event.target.value)}
+                placeholder="Subject (e.g. OS, ADS, CCN)"
+              />
+
+              <button
+                onClick={handleUpload}
+                disabled={uploadLoading || !uploadFile || !uploadSubject.trim()}
+              >
+                {uploadLoading ? "Uploading..." : "Upload"}
+              </button>
+
+            </div>
+
+            {uploadFile && (
+              <p style={{ marginTop: "8px", fontSize: "11px", color: "#777782" }}>
+                Selected: {uploadFile.name}
+              </p>
+            )}
+
+            {uploadMessage && (
+              <div
+                style={{
+                  marginTop: "12px",
+                  padding: "12px 14px",
+                  border: "1px solid #ccebdc",
+                  background: "#f4fcf8",
+                  borderRadius: "9px",
+                  color: "#358764",
+                  fontSize: "11px",
+                }}
+              >
+                {uploadMessage}
+              </div>
+            )}
+
+            {uploadError && (
+              <div className="search-error">
+                {uploadError}
+              </div>
+            )}
+
+          </section>
+
+          {/* Search */}
+          <section className="search-section" id="search">
 
             <div className="section-heading">
               <div>
@@ -488,7 +662,7 @@ function App() {
           </section>
 
           {/* Sources */}
-          <section className="sources-section">
+          <section className="sources-section" id="sources">
 
             <div className="section-heading">
 
@@ -501,10 +675,13 @@ function App() {
                 </p>
               </div>
 
-              <button className="view-all">
-                View all
-                <ChevronRight size={16} />
-              </button>
+            <button
+            className="view-all"
+              onClick={() => navigateToSection("sources")}
+            >
+            View all
+              <ChevronRight size={16} />
+            </button>
 
             </div>
 
