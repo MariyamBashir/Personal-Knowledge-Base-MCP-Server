@@ -51,27 +51,30 @@ React Dashboard
 
 ## Features
 
-## Document Processing
--PDF upload
--PDF text extraction using PyPDF
--Text chunking
--Subject/category organization
--Automatic document ingestion
+Document Processing
+
+PDF upload
+PDF text extraction using PyPDF
+Text chunking
+Subject/category organization
+Automatic document ingestion
 
 ## Semantic Search
--Natural-language queries
--Sentence Transformer embeddings
--Semantic similarity search
--Ranked search results
--Similarity scores
--Retrieval of relevant document chunks
+
+Natural-language queries
+Sentence Transformer embeddings
+Semantic similarity search
+Ranked search results
+Similarity scores
+Retrieval of relevant document chunks
 
 ## Document Retrieval
--List available sources
--Retrieve complete document context
--Display document metadata
--Display full document content
--Display retrieval chunks
+
+List available sources
+Retrieve complete document context
+Display document metadata
+Display full document content
+Display retrieval chunks
 
 ---
 
