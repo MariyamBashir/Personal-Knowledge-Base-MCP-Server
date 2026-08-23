@@ -115,7 +115,7 @@ The React/Vite frontend provides:
 
 ---
 
-Embedding Model
+## Embedding Model
 
 The project uses:
 
@@ -124,50 +124,6 @@ all-MiniLM-L6-v2
 Embedding dimension:
 
 384
-
----
-
-Project Structure
-
-Personal-Knowledge-Base-MCP-Server/
-│
-├── README.md
-│
-├── backend/
-│   │
-│   ├── app/
-│   │   ├── __init__.py
-│   │   ├── config.py
-│   │   ├── main.py
-│   │   ├── mcp_server.py
-│   │   │
-│   │   ├── services/
-│   │   │   ├── __init__.py
-│   │   │   ├── chunker.py
-│   │   │   ├── embeddings.py
-│   │   │   ├── ingestion.py
-│   │   │   ├── qdrant_service.py
-│   │   │   └── retrieval.py
-│   │   │
-│   │   └── utils/
-│   │       ├── __init__.py
-│   │       └── document_reader.py
-│   │
-│   ├── uploads/
-│   ├── .env
-│   ├── .gitignore
-│   ├── requirements.txt
-│   └── tests / test scripts
-│
-└── frontend/
-    │
-    ├── src/
-    │   ├── App.jsx
-    │   ├── App.css
-    │   └── ...
-    │
-    ├── package.json
-    └── ...
 
 ---
 
@@ -313,5 +269,5 @@ The project currently provides a working end-to-end personal knowledge-base syst
 
 **Maryam Bashir**
 
-- **GitHub:** [@yourusername](https://github.com/MariyamBashir)
-- **LinkedIn:** [Your LinkedIn Profile](https://linkedin.com/in/maryam-bashir-3000542b3)
+- **GitHub:** [MariyamBashir](https://github.com/MariyamBashir)
+- **LinkedIn:** [Maryam Bashir](https://linkedin.com/in/maryam-bashir-3000542b3)
