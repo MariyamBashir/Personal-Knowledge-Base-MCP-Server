@@ -53,11 +53,11 @@ React Dashboard
 
 Document Processing
 
-PDF upload
-PDF text extraction using PyPDF
-Text chunking
-Subject/category organization
-Automatic document ingestion
+- PDF upload
+- PDF text extraction using PyPDF
+- Text chunking
+- Subject/category organization
+- Automatic document ingestion
 
 ## Semantic Search
 
