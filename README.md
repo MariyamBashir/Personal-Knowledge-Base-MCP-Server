@@ -49,7 +49,7 @@ React Dashboard
 ```
 ---
 
-## Features
+## 🚀 Features
 
 Document Processing
 
@@ -61,30 +61,30 @@ Document Processing
 
 ## Semantic Search
 
-Natural-language queries
-Sentence Transformer embeddings
-Semantic similarity search
-Ranked search results
-Similarity scores
-Retrieval of relevant document chunks
+- Natural-language queries
+- Sentence Transformer embeddings
+- Semantic similarity search
+- Ranked search results
+- Similarity scores
+- Retrieval of relevant document chunks
 
 ## Document Retrieval
 
-List available sources
-Retrieve complete document context
-Display document metadata
-Display full document content
-Display retrieval chunks
+- List available sources
+- Retrieve complete document context
+- Display document metadata
+- Display full document content
+- Display retrieval chunks
 
 ---
 
 ## MCP Integration
 The project includes a FastMCP server exposing the knowledge base through callable MCP tools:
 
--ping()
--search_notes()
--get_document()
--list_sources()
+- ping()
+- search_notes()
+- get_document()
+- list_sources()
 
 ## Multi-User Support
 Documents are associated with a user_id.
@@ -96,15 +96,15 @@ Search and document retrieval operations are filtered by the requesting user's I
 ## Web Dashboard
 The React/Vite frontend provides:
 
--Dashboard statistics
--API connection status
--Semantic search
--Search result navigation
--Source listing
--Document viewer
--PDF upload
--Automatic source refresh after upload
--Responsive navigation
+- Dashboard statistics
+- API connection status
+- Semantic search
+- Search result navigation
+- Source listing
+- Document viewer
+- PDF upload
+- Automatic source refresh after upload
+- Responsive navigation
 
 ---
 
@@ -130,7 +130,7 @@ Embedding dimension:
 
 ---
 
-## 🚀 Getting Started
+## 🛠️ Getting Started
 
 ## Prerequisites
 Make sure you have installed:
@@ -159,10 +159,10 @@ pip install -r requirements.txt
 Create a .env file in the backend directory with your Qdrant credentials:
 
 Code snippet
-
-QDRANT_URL=your_qdrant_cluster_url
-QDRANT_API_KEY=your_qdrant_api_key
-
+```
+- QDRANT_URL=your_qdrant_cluster_url
+- QDRANT_API_KEY=your_qdrant_api_key
+```
 Launch the Services (Run in separate terminal sessions):
 
 # Initialize the FastAPI REST API (Port 8000)
@@ -175,73 +175,75 @@ python -m app.mcp_server
 
 Navigate to the frontend directory to launch the web dashboard:
 
-cd frontend
-npm install
-npm run dev
+- cd frontend
+- npm install
+- npm run dev
 The web interface will be accessible at http://localhost:5173.
 
-## Testing
+## 🧪 Testing
 
 ## The backend includes test scripts covering:
 
--Document reading
--Text chunking
--Embedding generation
--Qdrant connection
--Document ingestion
--Retrieval
--Semantic search queries
--Similarity thresholds
--No-match behavior
--MCP tools
--Multi-user isolation
--User ID indexing
+- Document reading
+- Text chunking
+- Embedding generation
+- Qdrant connection
+- Document ingestion
+- Retrieval
+- Semantic search queries
+- Similarity thresholds
+- No-match behavior
+- MCP tools
+- Multi-user isolation
+- User ID indexing
 
 ## The frontend has been manually tested for:
 
--API connection
--Dashboard statistics
--Semantic search
--Search results
--Source navigation
--Document viewer
--PDF upload
--Uploaded document retrieval
--Mobile/responsive navigation
--End-to-end document workflow
+- API connection
+- Dashboard statistics
+- Semantic search
+- Search results
+- Source navigation
+- Document viewer
+- PDF upload
+- Uploaded document retrieval
+- Mobile/responsive navigation
+- End-to-end document workflow
 
 ---
 
-## Security
+## 🔐 Security
 
--Qdrant credentials are stored in environment variables.
--.env is excluded from version control.
--Documents are filtered by user_id.
--Cross-user document access is blocked at the retrieval layer.
+- Qdrant credentials are stored in environment variables.
+- .env is excluded from version control.
+- Documents are filtered by user_id.
+- Cross-user document access is blocked at the retrieval layer. 
 
 For production use, the system should additionally implement:
 
--User authentication
--Authorization
--Secure user identity management
--Production secrets management
--HTTPS
--Production deployment configuration
--Future Improvements
+- User authentication
+- Authorization
+- Secure user identity management
+- Production secrets management
+- HTTPS
+- Production deployment configuration
+- Future Improvements
 
-Potential future improvements include:
+---
 
--User authentication and accounts
--Multiple file formats
--Document deletion
--Document metadata editing
--Pagination for large knowledge bases
--Improved retrieval/ranking strategies
--Production deployment
--AI-generated answers based on retrieved context
--Conversation history
--Advanced document filtering
--More granular permissions
+## 🔮 Potential future improvements include:
+
+- User authentication and accounts
+- Multiple file formats
+- Document deletion
+- Document metadata editing
+- Pagination for large knowledge bases
+- Improved retrieval/ranking strategies
+- Production deployment
+- AI-generated answers based on retrieved context
+- Conversation history
+- Advanced document filtering
+- More granular permissions
 
 ---
 
@@ -250,21 +252,21 @@ Completed
 
 The project currently provides a working end-to-end personal knowledge-base system featuring:
 
--PDF document ingestion
--Text extraction and chunking
--Semantic embeddings
--Qdrant Cloud vector storage
--Semantic document retrieval
--FastAPI REST API
--FastMCP integration
--MCP tools
--Multi-user document isolation
--React/Vite frontend
--PDF upload
--Source listing
--Full document viewing
--Search result retrieval
--End-to-end testing
+- PDF document ingestion
+- Text extraction and chunking
+- Semantic embeddings
+- Qdrant Cloud vector storage
+- Semantic document retrieval
+- FastAPI REST API
+- FastMCP integration
+- MCP tools
+- Multi-user document isolation
+- React/Vite frontend
+- PDF upload
+- Source listing
+- Full document viewing
+- Search result retrieval
+- End-to-end testing
 
 ---
 
