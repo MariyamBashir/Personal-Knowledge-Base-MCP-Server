@@ -1,19 +1,107 @@
 # Personal Knowledge MCP Server
 
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat&logo=fastapi)](https://fastapi.tiangolo.com/)
-[![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+A full-stack personal knowledge-base system that allows users to upload PDF documents, convert their content into semantic embeddings, store them in Qdrant Cloud, and search their knowledge using natural-language queries.
 
-An enterprise-ready, full-stack knowledge base system designed to ingest PDF documents, generate semantic embeddings, and facilitate natural-language querying. The system exposes its capabilities via a REST API and a Model Context Protocol (MCP) server, allowing seamless integration with modern LLM workflows.
+The system provides both a **FastAPI REST API** and a **FastMCP server**, together with a **React/Vite frontend dashboard** for interacting with the knowledge base.
+
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat&logo=fastapi)
+![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite)
+![Qdrant](https://img.shields.io/badge/Qdrant-Vector%20Database-red)
+![MCP](https://img.shields.io/badge/MCP-FastMCP-purple)
 
 ---
 
-## 🎯 System Overview
+## 🎯 Overview
 
-*   **Semantic Search Engine:** Utilizes Sentence Transformers (`all-MiniLM-L6-v2`) and Qdrant Cloud vector database for high-accuracy contextual retrieval.
-*   **Model Context Protocol (MCP):** Native FastMCP integration exposes internal knowledge stores directly to AI agents.
-*   **Multi-Tenant Architecture:** Implements strict user-level data isolation to ensure secure and partitioned document management.
-*   **Modern Frontend Dashboard:** A responsive React/Vite web interface for document ingestion and metadata visualization.
+The Personal Knowledge MCP Server combines document processing, semantic search, vector storage, and MCP integration into a single knowledge-base system.
+
+Users can:
+
+- Upload PDF documents
+- Organize documents by subject
+- Search their knowledge using natural-language queries
+- View semantic search results and similarity scores
+- Open complete source documents
+- Browse available knowledge sources
+- Retrieve documents through MCP tools
+- Maintain isolated knowledge spaces using user IDs
+
+The system processes documents through the following pipeline:
+
+``` text 
+PDF Document
+     ↓
+Text Extraction
+     ↓
+Text Chunking
+     ↓
+Sentence Transformer Embeddings
+     ↓
+Qdrant Cloud
+     ↓
+Semantic Retrieval
+     ↓
+FastAPI / MCP
+     ↓
+React Dashboard 
+```
+---
+
+## Features
+
+## Document Processing
+-PDF upload
+-PDF text extraction using PyPDF
+-Text chunking
+-Subject/category organization
+-Automatic document ingestion
+
+## Semantic Search
+-Natural-language queries
+-Sentence Transformer embeddings
+-Semantic similarity search
+-Ranked search results
+-Similarity scores
+-Retrieval of relevant document chunks
+
+## Document Retrieval
+-List available sources
+-Retrieve complete document context
+-Display document metadata
+-Display full document content
+-Display retrieval chunks
+
+---
+
+## MCP Integration
+The project includes a FastMCP server exposing the knowledge base through callable MCP tools:
+
+-ping()
+-search_notes()
+-get_document()
+-list_sources()
+
+## Multi-User Support
+Documents are associated with a user_id.
+
+Search and document retrieval operations are filtered by the requesting user's ID, preventing users from accessing documents belonging to another user.
+
+---
+
+## Web Dashboard
+The React/Vite frontend provides:
+
+-Dashboard statistics
+-API connection status
+-Semantic search
+-Search result navigation
+-Source listing
+-Document viewer
+-PDF upload
+-Automatic source refresh after upload
+-Responsive navigation
 
 ---
 
@@ -27,15 +115,80 @@ An enterprise-ready, full-stack knowledge base system designed to ingest PDF doc
 
 ---
 
+Embedding Model
+
+The project uses:
+
+all-MiniLM-L6-v2
+
+Embedding dimension:
+
+384
+
+---
+
+Project Structure
+
+Personal-Knowledge-Base-MCP-Server/
+│
+├── README.md
+│
+├── backend/
+│   │
+│   ├── app/
+│   │   ├── __init__.py
+│   │   ├── config.py
+│   │   ├── main.py
+│   │   ├── mcp_server.py
+│   │   │
+│   │   ├── services/
+│   │   │   ├── __init__.py
+│   │   │   ├── chunker.py
+│   │   │   ├── embeddings.py
+│   │   │   ├── ingestion.py
+│   │   │   ├── qdrant_service.py
+│   │   │   └── retrieval.py
+│   │   │
+│   │   └── utils/
+│   │       ├── __init__.py
+│   │       └── document_reader.py
+│   │
+│   ├── uploads/
+│   ├── .env
+│   ├── .gitignore
+│   ├── requirements.txt
+│   └── tests / test scripts
+│
+└── frontend/
+    │
+    ├── src/
+    │   ├── App.jsx
+    │   ├── App.css
+    │   └── ...
+    │
+    ├── package.json
+    └── ...
+
+---
+
 ## 🚀 Getting Started
 
-### 1. Backend Configuration
+## Prerequisites
+Make sure you have installed:
+
+- Python 3.10+
+- Node.js
+- npm
+- A Qdrant Cloud account
+
+  ### 1. Backend Configuration
 
 Navigate to the `backend` directory and initialize the Python environment:
 
 ```bash
 cd backend
 python -m venv .venv
+```
 
 # Activate the environment (macOS/Linux)
 source .venv/bin/activate
@@ -47,6 +200,7 @@ pip install -r requirements.txt
 Create a .env file in the backend directory with your Qdrant credentials:
 
 Code snippet
+
 QDRANT_URL=your_qdrant_cluster_url
 QDRANT_API_KEY=your_qdrant_api_key
 
@@ -59,76 +213,105 @@ uvicorn app.main:app --reload
 python -m app.mcp_server
 
 2. Frontend Configuration
+
 Navigate to the frontend directory to launch the web dashboard:
 
-Bash
 cd frontend
 npm install
 npm run dev
 The web interface will be accessible at http://localhost:5173.
 
-🔌 API & MCP Integration
+## Testing
 
-MCP Server Tools
-The integrated FastMCP server exposes the following functions to connected LLM clients:
+## The backend includes test scripts covering:
 
-search_notes(query: str, top_k: int = 5): Executes semantic search over the user's vector data.
+-Document reading
+-Text chunking
+-Embedding generation
+-Qdrant connection
+-Document ingestion
+-Retrieval
+-Semantic search queries
+-Similarity thresholds
+-No-match behavior
+-MCP tools
+-Multi-user isolation
+-User ID indexing
 
-get_document(doc_id: str): Retrieves the raw source text for a specified document ID.
+## The frontend has been manually tested for:
 
-list_sources(): Outputs an index of all available documents in the knowledge base.
-
-ping(): Diagnostics tool to verify MCP server health and connection status.
-
-🔒 Security & Data Isolation
-This system is built with strict user-level data isolation. All system
-requests (both REST and MCP) require a valid user_id parameter. This architecture guarantees
-that users can only upload, query, and retrieve documents within their designated partition,
-preventing unauthorized cross-tenant data access.
-
-🏁 Project Status: Completed
-
-The project provides a fully working personal knowledge-base system featuring:
-
-Semantic document retrieval
-
-Native MCP tools
-
-FastAPI REST API
-
-Qdrant vector storage
-
-Multi-user isolation
-
-React/Vite frontend UI
-
-PDF upload & parsing
-
-Document viewing & source listing
-
-End-to-end tested workflow
-
-The project is ready for demonstration and deployment.
+-API connection
+-Dashboard statistics
+-Semantic search
+-Search results
+-Source navigation
+-Document viewer
+-PDF upload
+-Uploaded document retrieval
+-Mobile/responsive navigation
+-End-to-end document workflow
 
 ---
 
-### Step 2: Clean up the Frontend `README.md`
-Since the main documentation is now at the root, replace the contents of the `frontend/README.md` file with this short,
-standard Vite setup snippet so it doesn't duplicate your main docs:
+## Security
 
-```markdown
-# Frontend - Personal Knowledge Base
+-Qdrant credentials are stored in environment variables.
+-.env is excluded from version control.
+-Documents are filtered by user_id.
+-Cross-user document access is blocked at the retrieval layer.
 
-This is the React/Vite frontend for the Personal Knowledge MCP Server.
+For production use, the system should additionally implement:
 
-## Development Setup
+-User authentication
+-Authorization
+-Secure user identity management
+-Production secrets management
+-HTTPS
+-Production deployment configuration
+-Future Improvements
 
-1. Ensure the Python FastAPI backend is running on `http://localhost:8000`.
-2. Install dependencies:
-   ```bash
-   npm install
+Potential future improvements include:
 
-Start the development server:
+-User authentication and accounts
+-Multiple file formats
+-Document deletion
+-Document metadata editing
+-Pagination for large knowledge bases
+-Improved retrieval/ranking strategies
+-Production deployment
+-AI-generated answers based on retrieved context
+-Conversation history
+-Advanced document filtering
+-More granular permissions
 
-Bash
-npm run dev
+---
+
+## Project Status
+Completed
+
+The project currently provides a working end-to-end personal knowledge-base system featuring:
+
+-PDF document ingestion
+-Text extraction and chunking
+-Semantic embeddings
+-Qdrant Cloud vector storage
+-Semantic document retrieval
+-FastAPI REST API
+-FastMCP integration
+-MCP tools
+-Multi-user document isolation
+-React/Vite frontend
+-PDF upload
+-Source listing
+-Full document viewing
+-Search result retrieval
+-End-to-end testing
+
+---
+
+## Author
+
+**Maryam Bashir**
+
+- **GitHub:** [@yourusername](https://github.com/MariyamBashir)
+- **LinkedIn:** [Your LinkedIn Profile](https://linkedin.com/in/maryam-bashir-3000542b3)
